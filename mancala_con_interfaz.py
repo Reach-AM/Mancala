@@ -11,11 +11,8 @@ Original file is located at
 ### Librerías auxiliares
 """
 
-# pip install pygame
-
 import copy as cp
 import math
-import pygame
 
 """## Nodos
 Estos nodos son la estructura de datos que forman el árbol generado por minmax.
@@ -285,12 +282,6 @@ class Mancala:
     print(" /  |",b[12],"|",b[11],"|",b[10],"|",b[9],"|",b[8],"|",b[7],"|  \\\n")
     print("|",b[13],"|                       |",b[6],"|\n")
     print(" \\  |",b[0],"|",b[1],"|",b[2],"|",b[3],"|",b[4],"|",b[5],"|  /\n")
-
-"""## Interfaz
-*Pygame no puede correr en colab*
-"""
-
-
 
 """## Inicio del juego
 Desde aquí se lleva a cabo el inicio del juego. Lo único que se le pasa al objeto
