@@ -130,7 +130,10 @@ class Mancala:
           elif (b[pos] == 0 and pos >= 7 and pos < 13 and b[self.inv[pos]] > 0):
             b[13] += self.__robo(pos, b) + 1
           elif (pos == 6):
-            b[x + semillas - len(b)] += 1
+            if(b[x + semillas - len(b)] == 0):
+              b[13] += self.__robo(x + semillas - len(b), b) + 1
+            else:
+              b[x + semillas - len(b)] += 1
           else:
             b[pos] += 1
         else:
@@ -140,7 +143,10 @@ class Mancala:
           elif (b[pos] == 0 and pos >= 0 and pos < 6 and b[self.inv[pos]] > 0):
             b[6] += self.__robo(pos, b) + 1
           elif (pos == 13):
-            b[x + semillas - len(b)] += 1
+            if(b[x + semillas - len(b)] == 0):
+              b[6] += self.__robo(x + semillas - len(b), b) + 1
+            else:
+              b[x + semillas - len(b)] += 1
           else:
             b[pos] += 1
       else:
@@ -271,7 +277,7 @@ class Mancala:
       return minEval
 
     ##############################################################################
-    #################### MÉTODO MINMAX CON ALPHA-BETA PRUNING ####################
+    ####################### MÉTODO PARA IMPRIMIR EL TABLERO ######################
     ##############################################################################
 
   def __imprimirTablero(self, b):
