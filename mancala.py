@@ -252,6 +252,7 @@ tablero = pygame.image.load(path + 'tablero.png')
 stones = pygame.image.load(path + 'stones.png')
 numbers = pygame.image.load(path + 'numbers.png')
 title = pygame.image.load(path + 'title.png')
+buttonss = pygame.image.load(path + 'buttons.png')
 
 ############################################################
 ########################## Set up ##########################
@@ -276,6 +277,10 @@ def Tablero():
 
 def Titulo():
   screen.blit(title, (0, 0))
+  screen.blit(buttonss, (402, 370), (792,0,396,100))
+
+def Dificutad(x):
+  screen.blit(buttonss, (418, 386), (x, 100,364,68))
 
 ############################################################
 ######################### Semillas #########################
@@ -368,8 +373,8 @@ def mover_tablero(semillas, x, turno):
           semillas[pos].append(new_pos)
       elif (pos == 6):
           new_pos = sem_ini[i]
-          new_pos[0] = 940 + random.randint(0,30)
-          new_pos[1] = 80 + random.randint(0,180)
+          new_pos[0] = 940 + random.randint(-10,20)
+          new_pos[1] = 40 + random.randint(0,200)
           semillas[pos].append(new_pos)
       elif (pos < 13):
           new_pos = sem_ini[i]
@@ -378,8 +383,8 @@ def mover_tablero(semillas, x, turno):
           semillas[pos].append(new_pos)
       elif (pos == 13):
           new_pos = sem_ini[i]
-          new_pos[0] = 45 + random.randint(0,30)
-          new_pos[1] = 80 + random.randint(0,180)
+          new_pos[0] = 45 + random.randint(-10,20)
+          new_pos[1] = 40 + random.randint(0,200)
           semillas[pos].append(new_pos)
       if robo: semillas = mover_robo(semillas,pos, posinv[pos], turno)
     return semillas
@@ -389,14 +394,14 @@ def mover_robo(semillas, pos, posinv, turno):
   else: x,fin = 940,6
   for semilla in semillas[pos]:
     new_pos = semilla
-    new_pos[0] = x + random.randint(0,30)
-    new_pos[1] = 80 + random.randint(0,180)
+    new_pos[0] = x + random.randint(-10,20)
+    new_pos[1] = 40 + random.randint(0,200)
     semillas[fin].append(new_pos)
   semillas[pos] = [[0]]
   for semilla in semillas[posinv]:
     new_pos = semilla
-    new_pos[0] = x + random.randint(0,30)
-    new_pos[1] = 80 + random.randint(0,180)
+    new_pos[0] = x + random.randint(-10,20)
+    new_pos[1] = 40 + random.randint(0,200)
     semillas[fin].append(new_pos)
   semillas[posinv] = [[0]]
   return semillas
@@ -406,7 +411,11 @@ def mover_robo(semillas, pos, posinv, turno):
 ########################### Menu ###########################
 ############################################################
 
+scroll_dif = 0
+set_dif = 3
+pos_dif = 0
 def MainMenu():
+  global scroll_dif, set_dif, pos_dif
   click = False
   while True:
     screen.fill((64, 98, 102))
@@ -416,28 +425,78 @@ def MainMenu():
         pygame.quit()
         exit()
       if event.type == pygame.MOUSEBUTTONDOWN:
-        if event.button == 1:
+        if event.button == 1 and scroll_dif == 0:
           click = True
 
+    MenuButtons(click, mouse_x, mouse_y, set_dif)
+    scroll_dif = Arrows(click, mouse_x, mouse_y, scroll_dif)
+    if scroll_dif > 0:
+        if pos_dif < ((set_dif/3) - 1)*364:
+            pos_dif += 2
+        else:
+          if(set_dif == 15):
+            set_dif = 3
+            pos_dif = 0
+          scroll_dif = 0
+        Dificutad(pos_dif)
+    elif scroll_dif < 0:
+        if(set_dif == 0):
+          set_dif = 12
+          pos_dif = 1456
+        if pos_dif > ((set_dif/3) - 1)*364:
+            pos_dif -= 2
+        else:
+          scroll_dif = 0
+        Dificutad(pos_dif)
+    else:
+        Dificutad(pos_dif)
     Titulo()
-    MenuButtons(click, mouse_x, mouse_y)
 
     click = False
     pygame.display.update()
 
-def MenuButtons(click, mouse_x, mouse_y):
-  button_start = pygame.Rect(500, 300, 200, 75)
-  pygame.draw.rect(screen, (255, 0, 0), button_start, 0, 10)
-  if button_start.collidepoint((mouse_x, mouse_y)) and click:
-    semillas = SetUpInicial()
-    GameStart(semillas)
+def MenuButtons(click, mouse_x, mouse_y, set_dif):
+  button_start = pygame.Rect(402, 245, 396, 100)
+  pygame.draw.rect(screen, (64, 98, 102), button_start, 0, 25)
+  if button_start.collidepoint((mouse_x, mouse_y)):
+    screen.blit(buttonss, (402, 245), (396,0,396,100))
+    if click:
+      semillas = SetUpInicial()
+      GameStart(semillas, set_dif)
+  else:
+    screen.blit(buttonss, (402, 245), (0,0,396,100))
+
+def Arrows(click, mouse_x, mouse_y, scroll_dif):
+  global set_dif
+  button_right = pygame.Rect(838, 394, 36,52)
+  button_left = pygame.Rect(326, 394, 36,52)
+  pygame.draw.rect(screen, (64, 98, 102), button_right)
+  pygame.draw.rect(screen, (64, 98, 102), button_left)
+  if button_right.collidepoint((mouse_x, mouse_y)):
+    screen.blit(buttonss, (838, 394), (1224,0,36,52))
+    screen.blit(buttonss, (326, 394), (1260,0,36,52))
+    if click:
+      set_dif += 3
+      return 1
+    return scroll_dif
+  elif button_left.collidepoint((mouse_x,mouse_y)):
+    screen.blit(buttonss, (838, 394), (1188,0,36,52))
+    screen.blit(buttonss, (326, 394), (1296,0,396,100))
+    if click:
+      set_dif -= 3
+      return -1
+    return scroll_dif
+  else:
+    screen.blit(buttonss, (838, 394), (1188,0,36,52))
+    screen.blit(buttonss, (326, 394), (1260,0,36,52))
+    return scroll_dif
 
 
 ############################################################
 ########################### Game ###########################
 ############################################################
-def GameStart(semillas):
-  juegoo = Mancala(12)
+def GameStart(semillas, set_dif):
+  juegoo = Mancala(set_dif)
   mancala_board = [juegoo.board, False]
   click = False
   while (not juegoo.game_over(mancala_board[0])):
@@ -452,6 +511,12 @@ def GameStart(semillas):
           if not mancala_board[1]:
             click = True
 
+    if mancala_board[1]:
+      pygame.time.wait(1000)
+      cpu_mov = juegoo.next(mancala_board[0]) + 7
+      semillas = mover_tablero(semillas, cpu_mov, mancala_board[1])
+      mancala_board = juegoo.turno(cpu_mov, mancala_board[1], mancala_board[0])
+
     Tablero()
     mancala_board = Movimientos(semillas, mouse_x, mouse_y, click, juegoo, mancala_board)
     Semillas(semillas)
@@ -460,11 +525,6 @@ def GameStart(semillas):
     if(juegoo.game_over(mancala_board[0])): break
 
     click = False
-    if mancala_board[1]:
-      cpu_mov = juegoo.next(mancala_board[0]) + 7
-      semillas = mover_tablero(semillas, cpu_mov, mancala_board[1])
-      mancala_board = juegoo.turno(cpu_mov, mancala_board[1], mancala_board[0])
-
     pygame.display.update()
   semillas = Ajuste_Final(semillas)
   Pantalla_Final(semillas)
@@ -509,11 +569,10 @@ def Ajuste_Final(semillas):
         if(i < 6): x,fin = 940,6
         else: x,fin = 45,13
         new_pos = semilla
-        new_pos[0] = x + random.randint(0,30)
-        new_pos[1] = 80 + random.randint(0,180)
+        new_pos[0] = x + random.randint(-10,20)
+        new_pos[1] = 40 + random.randint(0,200)
         semillas[fin].append(new_pos)
       semillas[i] = [[0]]
-  print('Hola')
   return semillas
 
 def Pantalla_Final(semillas):
