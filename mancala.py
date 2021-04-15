@@ -282,6 +282,12 @@ def Titulo():
 def Dificutad(x):
   screen.blit(buttonss, (418, 386), (x, 100,364,68))
 
+def FinalScreen(x, alpha):
+  surface = pygame.Surface((1200,500))
+  surface.set_alpha(255-alpha)
+  surface.blit(buttonss, (218.5, 100), (x, 268, 763,175))
+  screen.blit(surface, (0, 0))
+
 ############################################################
 ######################### Semillas #########################
 ############################################################
@@ -512,7 +518,7 @@ def GameStart(semillas, set_dif):
             click = True
 
     if mancala_board[1]:
-      pygame.time.wait(1000)
+      pygame.time.wait(1500)
       cpu_mov = juegoo.next(mancala_board[0]) + 7
       semillas = mover_tablero(semillas, cpu_mov, mancala_board[1])
       mancala_board = juegoo.turno(cpu_mov, mancala_board[1], mancala_board[0])
@@ -527,7 +533,7 @@ def GameStart(semillas, set_dif):
     click = False
     pygame.display.update()
   semillas = Ajuste_Final(semillas)
-  Pantalla_Final(semillas)
+  Pantalla_Final(semillas, 800)
 
 ############################################################
 ################# Movimientos del jugador ##################
@@ -539,7 +545,7 @@ def Movimientos(semillas, mouse_x, mouse_y, click, juegoo, mancala_board):
   movements = []
 
   for i in range(6):
-    button_seed = pygame.draw.circle(surface, (0,0,255,0), (287.5 + 125 * i,350), 50, 50)
+    button_seed = pygame.draw.circle(surface, (0,0,0,0), (287.5 + 125 * i,350), 50, 50)
     movements.append(button_seed)
 
   if(click):
@@ -575,9 +581,12 @@ def Ajuste_Final(semillas):
       semillas[i] = [[0]]
   return semillas
 
-def Pantalla_Final(semillas):
+def Pantalla_Final(semillas, countdown):
   click = False
   review = True
+  if len(semillas[6]) > len(semillas[13]): x = 0
+  else: x = 763
+
   while review:
     screen.fill((64, 98, 102))
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -588,20 +597,34 @@ def Pantalla_Final(semillas):
       if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1:
           click = True
-
     Tablero()
     Semillas(semillas)
     Scoreboard(semillas)
+    if(countdown > 255): countdown -= 1
+    elif(countdown > 0):
+      countdown -= 1
+      FinalScreen(x, countdown)
+    else:
+      FinalScreen(x, 0)
+      review = Return(click, mouse_x, mouse_y)
+
+    click = False
     pygame.display.update()
 
-
+def Return(click, mouse_x, mouse_y):
+  button_return = pygame.Rect(454.5,360,291,100)
+  pygame.draw.rect(screen, (0, 0, 0), button_return, 0,25)
+  if button_return.collidepoint((mouse_x, mouse_y)):
+    screen.blit(buttonss, (454.5,360), (292,168,292,100))
+    if click:
+      return False
+    return True
+  else:
+    screen.blit(buttonss, (454.5,360), (0,168,292,100))
+    return True
 
 """## Inicio del juego
-Desde aquí se lleva a cabo el inicio del juego. Lo único que se le pasa al objeto
-Manacala es la profunidad, que se puede considerar la dificultad del oponente.
-
-*12 es la mejor profundidad, antes de que la ia tome tiempos muy excesivos antes
-de hacer su tirada*
+Desde aquí se lleva a cabo el inicio del juego.
 """
 
 MainMenu()
